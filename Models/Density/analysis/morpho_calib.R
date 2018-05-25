@@ -4,13 +4,12 @@
 ####################
 
 # setwd with env var : need Sys.getenv
-setwd(paste0(Sys.getenv("CN_HOME"),'/Models/Synthetic/Density'))
-# load plot utils
-source(paste0(Sys.getenv("CN_HOME"),'/Models/Utils/R/plots.R'))
-# ggplot
+setwd(paste0(Sys.getenv("CS_HOME"),'/ReactionDiffusion/Models/Density'))
+
 library(ggplot2)
 library(dplyr)
 
+source(paste0(Sys.getenv("CS_HOME"),'/CityNetwork/Models/Utils/R/plots.R'))
 
 #############################
 #############################
@@ -19,27 +18,38 @@ library(dplyr)
 
 
 # load result
-#res = read.csv('res_oml_scala/2015_08_06_17_02_12_LHSsampling.csv',sep=',')
-res = as.tbl(read.csv(paste0(Sys.getenv("CN_HOME"),'/Results/Synthetic/Density/20151110_GridLHS/2015_11_10_18_11_05_GRID_LHS.csv'),sep=','))
+res = as.tbl(read.csv(paste0(Sys.getenv("CS_HOME"),'/ReactionDiffusion/Results/Density/20151110_GridLHS/data/2015_11_10_18_11_05_GRID_LHS.csv'),sep=','))
 # transform as usable data structure
 #indics_cols = c(4,5,7,10,11)
 indics_cols = 6:10
 #params_cols = c(1,2,3,6,8)
 params_cols = 1:5
-p = getSingleParamPoints(res,params_cols,indics_cols)
+#p = getSingleParamPoints(res,params_cols,indics_cols)
+
+res %>% group_by(id) %>% summarise(count = n())
+res %>% group_by(diffusion,diffusionsteps,alphalocalization,growthrate,population) %>% summarise(count = n())
+# ok idem 
+
+sres = res %>% group_by(id) %>% summarise(moranSd = sd(moran),moran=mean(moran),distanceSd = sd(distance),distance=mean(distance),
+                                          entropySd = sd(entropy),entropy=mean(entropy),slopeSd = sd(slope),slope=mean(slope),rsquaredSd=sd(rsquared),rsquared=mean(rsquared)
+                                          )
 
 # simple plot
+
+# indicators
+indics = c("distance","entropy","moran","rsquared","slope")
 
 # data frame of means
 indics_cols_m = 1:5
 params_cols_m = 6:10
-m=data.frame(matrix(data=unlist(p$mean),ncol=5,byrow=TRUE),matrix(data=unlist(p$param),ncol=5,byrow=TRUE));names(m)<- c("distance","entropy","moran","rsquared","slope","alphalocalization","diffusion","diffusionsteps","growthrate","population")
+#m=data.frame(matrix(data=unlist(p$mean),ncol=5,byrow=TRUE),matrix(data=unlist(p$param),ncol=5,byrow=TRUE));names(m)<- c("distance","entropy","moran","rsquared","slope","alphalocalization","diffusion","diffusionsteps","growthrate","population")
+#m = sres[,indics]
+m=sres
 med=data.frame(matrix(data=unlist(p$med),ncol=5,byrow=TRUE),matrix(data=unlist(p$param),ncol=5,byrow=TRUE));#names(med)<- c("distance","entropy","moran","rsquared","slope","alphalocalization","diffusion","diffusionsteps","growthrate","population")
 s=data.frame(matrix(data=unlist(p$sd),ncol=5,byrow=TRUE));names(s)<- c("distance","entropy","moran","rsquared","slope")
 params=m[,params_cols_m]
 
-# indicators
-indics = c("distance","entropy","moran","rsquared","slope")
+
 
 ##########################
 

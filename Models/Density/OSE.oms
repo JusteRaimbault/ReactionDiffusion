@@ -38,7 +38,7 @@ val model =
     plugins += pluginsOf[density.PADGeneratorLauncher],
     inputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
     outputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
-    outputs += (moran,distance,entropy,slope,rsquared)
+    outputs += (moran,distance,entropy,slope)
   )
 
 val purpose = "OSE"
@@ -48,14 +48,15 @@ val evolution =
   SteadyStateEvolution(
     algorithm = OSE(
       origin = Seq(
-        relocationRate in (0.0 to 1.0 by 0.1),
-        gammaCDA in (0.0 to 1.0 by 0.1),
-        gammaCDE in (0.0 to 1.0 by 0.1),
-        betaDC in (0.0 to 5.0 by 0.1),
+        diffusion in (0.0 to 0.2 by 0.01),
+        alphalocalization in (0.1 to 4.0 by 0.1),
+        growthrate in (500.0 to 30000.0 by 1000.0),
+        population in (10000.0 to 500000.0 by 10000.0),
+        diffusionsteps in (1.0 to 5.0 by 1.0)
       objectives = Seq(
-        (moran, 0.0),
-        (distance, 1.0),
-        (entropy, 0.5),
+        (moran, 0.1),
+        (distance, 0.2),
+        (entropy, 0.2),
         (slope, -1.0)
       ),
       stochastic = Stochastic(seed = replication)
