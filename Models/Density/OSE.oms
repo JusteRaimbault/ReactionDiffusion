@@ -35,10 +35,44 @@ val model =
       | val rsquared = gen.rsquared
     """.stripMargin
   ) set (
-    //imports += "density._",
     plugins += pluginsOf[density.PADGeneratorLauncher],
-    inputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication,id),
-    outputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication,id),
+    inputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
+    outputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
     outputs += (moran,distance,entropy,slope,rsquared)
   )
-//val modelCapsule = Capsule(model)
+
+val purpose = "OSE"
+
+
+val evolution =
+  SteadyStateEvolution(
+    algorithm = OSE(
+      origin = Seq(
+        relocationRate in (0.0 to 1.0 by 0.1),
+        gammaCDA in (0.0 to 1.0 by 0.1),
+        gammaCDE in (0.0 to 1.0 by 0.1),
+        betaDC in (0.0 to 5.0 by 0.1),
+      objectives = Seq(
+        (moran, 0.0),
+        (distance, 1.0),
+        (entropy, 0.5),
+        (slope, -1.0)
+      ),
+      stochastic = Stochastic(seed = replication)
+    ),
+    evaluation = model,
+    termination = 30 minutes
+  )
+
+val island =
+  IslandEvolution(
+    island = evolution,
+    parallelism = 1000,
+    termination = 100000
+  )
+
+val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / ((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose)
+
+val grid = EGIEnvironment("vo.complex-systems.eu",openMOLEMemory = 4000 megabytes)
+
+island on grid hook savePopulationHook
