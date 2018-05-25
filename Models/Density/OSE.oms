@@ -1,0 +1,44 @@
+import java.util.Date
+import java.text.SimpleDateFormat
+
+logger.level("FINE")
+
+
+val diffusion = Val[Double]
+val diffusionsteps = Val[Double]
+val alphalocalization = Val[Double]
+val growthrate = Val[Double]
+val population = Val[Double]
+
+// Exploration
+val replication = Val[Int]
+val id=Val[Int]
+
+// Reporters
+val moran=Val[Double]
+val distance=Val[Double]
+val entropy=Val[Double]
+val slope=Val[Double]
+val rsquared=Val[Double]
+
+// Model
+val model =
+  ScalaTask(
+    """
+      | val config = newFile()
+      | val gen = new density.PADGeneratorLauncher
+      | gen.main(100,input.population,input.diffusion,input.diffusionsteps,input.growthrate,input.alphalocalization,input.replication,config)
+      | val moran = gen.moran
+      | val distance = gen.distance
+      | val entropy = gen.entropy
+      | val slope = gen.slope
+      | val rsquared = gen.rsquared
+    """.stripMargin
+  ) set (
+    //imports += "density._",
+    plugins += pluginsOf[density.PADGeneratorLauncher],
+    inputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication,id),
+    outputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication,id),
+    outputs += (moran,distance,entropy,slope,rsquared)
+  )
+//val modelCapsule = Capsule(model)
