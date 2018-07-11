@@ -27,11 +27,11 @@ val target = 2;val o1 = 0.0713113837068162;val o2 = 0.841925316686474;val o3 = 0
 
 
 
-
 // Model
 val model =
   ScalaTask(
     """
+      | import density._ 
       | val config = newFile()
       | val gen = new density.PADGeneratorLauncher
       | gen.main(100,input.population,input.diffusion,input.diffusionsteps,input.growthrate,input.alphalocalization,input.replication,config)

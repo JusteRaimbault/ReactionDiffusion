@@ -1,1 +1,1 @@
-cat data/centers.csv| awk -F";" '{print "head -n 25 OSE.oms > OSE"$1".oms ; echo '\''val target = "$1";val o1 = "$2";val o2 = "$3";val o3 = "$4";val o4 = "$5"'\'' >> OSE"$1".oms ; tail -n 60 OSE.oms >> OSE"$1".oms ; #openmole --script OSE"$1".oms --password-file omlpsswd"}'|sh
+cat data/centers.csv| awk -F";" '{print "head -n 25 OSE.oms > OSE"$1".oms ; echo '\''val target = "$1";val o1 = "$2";val o2 = "$3";val o3 = "$4";val o4 = "$5"'\'' >> OSE"$1".oms ; tail -n 60 OSE.oms >> OSE"$1".oms ; openmole --script OSE"$1".oms --password-file omlpsswd"}'|sh
