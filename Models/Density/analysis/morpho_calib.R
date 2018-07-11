@@ -118,7 +118,7 @@ spec_regime_rows = which(dist<0.85)
 
 # load real_raw
 real_raw = read.csv(
-  paste0(Sys.getenv("CN_HOME"),'/Results/Morphology/Density/Numeric/20150806_europe50km_10kmoffset_100x100grid.csv'),
+  paste0(Sys.getenv("CN_HOME"),'/Results/StaticCorrelations/Morphology/Density/Numeric/20150806_europe50km_10kmoffset_100x100grid.csv'),
   sep=";"
 )
 
@@ -161,7 +161,7 @@ summary(prcomp(real[,c(1,2,4)]))
 
 summary(prcomp(m[,1:4]))
 
-# because superposed areas (with ≠ origin phases) -> strongly dependant
+# because superposed areas (with ??? origin phases) -> strongly dependant
 # should do the pca on 1/4 --> OK
 # dim ~ 3.5, quite good
 

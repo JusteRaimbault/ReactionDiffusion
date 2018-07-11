@@ -23,11 +23,7 @@ val rsquared=Val[Double]
 
 // objective values
 
-
-
-val target = 0
-val o1 = 0.1;val o2 = 0.2;val o3 = 0.2;val o4 = -1.0
-
+val target = 2;val o1 = 0.0713113837068162;val o2 = 0.841925316686474;val o3 = 0.83193768844005;val o4 = -0.958383438654972
 
 
 
