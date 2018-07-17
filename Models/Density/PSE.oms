@@ -45,6 +45,9 @@ val model =
     outputs += (moran,distance,entropy,slope,rsquared)
   )
 
+val purpose = "PSE_TEST"
+
+
 
   val evolution =
     SteadyStateEvolution(

@@ -54,6 +54,9 @@ val model =
 
 val purpose = "OSE"
 
+//val explo = DirectSampling(evaluation=model,sampling=(diffusion is 0.1)x(diffusionsteps is 1)x(alphalocalization is 1.0)x(growthrate is 1000.0)x(population is 10000.0)x(replication is 0))
+//explo
+
 
 val evolution =
   SteadyStateEvolution(
@@ -65,15 +68,15 @@ val evolution =
         population in (10000.0 to 500000.0 by 10000.0),
         diffusionsteps in (1.0 to 5.0 by 1.0))
       ,objectives = Seq(
-        (moran, o1),
-        (distance, o2),
-        (entropy, o3),
-        (slope, o4)
+        (moran, 0.0),
+        (distance, 0.0),
+        (entropy, 0.0),
+        (slope, 0.0)
       ),
       stochastic = Stochastic(seed = replication)
     ),
     evaluation = model,
-    termination = 30 minutes
+    termination = 100 //30 minutes
   )
 
 val island =
