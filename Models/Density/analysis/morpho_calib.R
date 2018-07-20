@@ -50,6 +50,10 @@ s=data.frame(matrix(data=unlist(p$sd),ncol=5,byrow=TRUE));names(s)<- c("distance
 params=m[,params_cols_m]
 
 
+####
+sres[sres$entropy<0.2&sres$distance<0.2&sres$slope<(-1)&sres$moran<0.1,]
+
+
 
 ##########################
 
