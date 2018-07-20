@@ -23,11 +23,7 @@ val rsquared=Val[Double]
 
 // objective values
 
-
-
-
-val target = 0;val o1 = 0.1;val o2 = 0.2;val o3 = 0.2;val o4 = -1.0
-
+val target = 3;val o1 = 0.114372503472472;val o2 = 0.632748065921371;val o3 = 0.743788555262452;val o4 = -1.87627414057856
 
 
 
@@ -54,9 +50,6 @@ val model =
 
 val purpose = "OSE"
 
-//val explo = DirectSampling(evaluation=model,sampling=(diffusion is 0.1)x(diffusionsteps is 1)x(alphalocalization is 1.0)x(growthrate is 1000.0)x(population is 10000.0)x(replication is 0))
-//explo
-
 
 val evolution =
   SteadyStateEvolution(
@@ -68,15 +61,15 @@ val evolution =
         population in (10000.0 to 500000.0 by 10000.0),
         diffusionsteps in (1.0 to 5.0 by 1.0))
       ,objectives = Seq(
-        (moran, 0.0),
-        (distance, 0.0),
-        (entropy, 0.0),
-        (slope, 0.0)
+        (moran, o1),
+        (distance, o2),
+        (entropy, o3),
+        (slope, o4)
       ),
       stochastic = Stochastic(seed = replication)
     ),
     evaluation = model,
-    termination = 100 //30 minutes
+    termination = 30 minutes
   )
 
 val island =
