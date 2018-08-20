@@ -61,15 +61,15 @@ val evolution =
         population in (10000.0 to 500000.0 by 10000.0),
         diffusionsteps in (1.0 to 5.0 by 1.0))
       ,objectives = Seq(
-        (moran, o1),
-        (distance, o2),
-        (entropy, o3),
-        (slope, o4)
+        (moran, 0.1),
+        (distance, 0.1),
+        (entropy, 0.1),
+        (slope, 0.1)
       ),
       stochastic = Stochastic(seed = replication)
     ),
     evaluation = model,
-    termination = 30 minutes
+    termination = 100 //30 minutes
   )
 
 val island =
