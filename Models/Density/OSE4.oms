@@ -25,9 +25,6 @@ val rsquared=Val[Double]
 
 val target = 4;val o1 = 0.0844641705095926;val o2 = 0.868347747233941;val o3 = 0.899223950923091;val o4 = -0.547321236849896
 
-
-
-
 // Model
 val model =
   ScalaTask(
@@ -50,36 +47,31 @@ val model =
 
 val purpose = "OSE"
 
+//val explo = DirectSampling(evaluation=model,sampling=(diffusion is 0.1)x(diffusionsteps is 1)x(alphalocalization is 1.0)x(growthrate is 1000.0)x(population is 10000.0)x(replication is 0))
+//explo
 
-val evolution =
-  SteadyStateEvolution(
-    algorithm = OSE(
-      origin = Seq(
+
+val island =
+  OSEEvolution(
+    origin = Seq(
         diffusion in (0.0 to 0.2 by 0.01),
         alphalocalization in (0.1 to 4.0 by 0.1),
         growthrate in (500.0 to 30000.0 by 1000.0),
         population in (10000.0 to 500000.0 by 10000.0),
-        diffusionsteps in (1.0 to 5.0 by 1.0))
-      ,objectives = Seq(
-        (moran, o1),
-        (distance, o2),
-        (entropy, o3),
-        (slope, o4)
-      ),
-      stochastic = Stochastic(seed = replication)
-    ),
+        diffusionsteps in (1.0 to 5.0 by 1.0)),
+    objectives = Seq(
+      (moran, o1),
+      (distance, o2),
+      (entropy, o3),
+      (slope, o4)),
+    stochastic = Stochastic(seed = replication),
     evaluation = model,
-    termination = 30 minutes
+    termination = 2000,
+    parallelism = 1000,
+    distribution = Island(100)
   )
 
-val island =
-  IslandEvolution(
-    island = evolution,
-    parallelism = 500,
-    termination = 20000
-  )
-
-val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / ((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose / "target"+target)
+val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / (((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose) / ("target"+target))
 
 val grid = EGIEnvironment("vo.complex-systems.eu",openMOLEMemory = 2000 megabytes)
 

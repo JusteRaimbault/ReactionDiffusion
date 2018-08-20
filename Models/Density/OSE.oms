@@ -58,35 +58,27 @@ val purpose = "OSE"
 //explo
 
 
-val evolution =
-  SteadyStateEvolution(
-    algorithm = OSE(
-      origin = Seq(
+val island =
+  OSEEvolution(
+    origin = Seq(
         diffusion in (0.0 to 0.2 by 0.01),
         alphalocalization in (0.1 to 4.0 by 0.1),
         growthrate in (500.0 to 30000.0 by 1000.0),
         population in (10000.0 to 500000.0 by 10000.0),
-        diffusionsteps in (1.0 to 5.0 by 1.0))
-      ,objectives = Seq(
-        (moran, 0.0),
-        (distance, 0.0),
-        (entropy, 0.0),
-        (slope, 0.0)
-      ),
-      stochastic = Stochastic(seed = replication)
-    ),
+        diffusionsteps in (1.0 to 5.0 by 1.0)),
+    objectives = Seq(
+      (moran, o1),
+      (distance, o2),
+      (entropy, o3),
+      (slope, o4)),
+    stochastic = Stochastic(seed = replication),
     evaluation = model,
-    termination = 100 //30 minutes
+    termination = 2000,
+    parallelism = 1000,
+    distribution = Island(100)
   )
 
-val island =
-  IslandEvolution(
-    island = evolution,
-    parallelism = 500,
-    termination = 20000
-  )
-
-val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / ((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose / "target"+target)
+val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / (((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose) / ("target"+target))
 
 val grid = EGIEnvironment("vo.complex-systems.eu",openMOLEMemory = 2000 megabytes)
 
