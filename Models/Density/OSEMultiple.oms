@@ -1,0 +1,97 @@
+import java.util.Date
+import java.text.SimpleDateFormat
+import io
+
+logger.level("FINE")
+
+
+val diffusion = Val[Double]
+val diffusionsteps = Val[Double]
+val alphalocalization = Val[Double]
+val growthrate = Val[Double]
+val population = Val[Double]
+
+// Exploration
+val replication = Val[Int]
+val id=Val[Int]
+
+// Reporters
+val moran=Val[Double]
+val distance=Val[Double]
+val entropy=Val[Double]
+val slope=Val[Double]
+val rsquared=Val[Double]
+
+// objective values
+
+//val target = 0;val o1 = 0.1;val o2 = 0.2;val o3 = 0.2;val o4 = -1.0
+//val targets=(1 until 5).toSeq
+//val o1s = ArrayBuffer[Double]();val o2s = ArrayBuffer[Double]();val o3s = ArrayBuffer[Double]();val o4s = ArrayBuffer[Double]();val o5s = ArrayBuffer[Double]()
+val objs = Array.fill(5){new ArrayBuffer[Double]()}
+val bufferedSource = io.Source.fromFile(workDirectory / "data/centers.csv")
+for (line <- bufferedSource.getLines) {
+    val cols = line.split(";").toList.tail.map(_.trim.toDouble)
+    (0 to 4 by 1).foreach{objs(i).append(cols(i))}
+}
+
+
+// Model
+val model =
+  ScalaTask(
+    """
+      | val config = newFile()
+      | val gen = new density.PADGeneratorLauncher
+      | gen.main(100,input.population,input.diffusion,input.diffusionsteps,input.growthrate,input.alphalocalization,input.replication,config)
+      | val moran = gen.moran
+      | val distance = gen.distance
+      | val entropy = gen.entropy
+      | val slope = gen.slope
+      | val rsquared = gen.rsquared
+    """.stripMargin
+  ) set (
+    plugins += pluginsOf[density.PADGeneratorLauncher],
+    inputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
+    outputs += (diffusion,diffusionsteps,alphalocalization,growthrate,population,replication),
+    outputs += (moran,distance,entropy,slope)
+  )
+
+val purpose = "OSE"
+
+//val explo = DirectSampling(evaluation=model,sampling=(diffusion is 0.1)x(diffusionsteps is 1)x(alphalocalization is 1.0)x(growthrate is 1000.0)x(population is 10000.0)x(replication is 0))
+//explo
+
+val grid = EGIEnvironment("vo.complex-systems.eu",openMOLEMemory = 2000 megabytes)
+
+
+
+def ose(i: Int, objectives: Array[Array[Double]] = objs.map(_.toArray)) = {
+
+  val island =
+    OSEEvolution(
+      origin = Seq(
+        diffusion in (0.0 to 0.2 by 0.01),
+        alphalocalization in (0.1 to 4.0 by 0.1),
+        growthrate in (500.0 to 30000.0 by 1000.0),
+        population in (10000.0 to 500000.0 by 10000.0),
+        diffusionsteps in (1.0 to 5.0 by 1.0)),
+      objectives = Seq(
+        (moran, o1),
+        (distance, o2),
+        (entropy, o3),
+        (slope, o4)),
+      stochastic = Stochastic(seed = replication),
+      evaluation = model,
+      termination = 10000,
+      parallelism = 500,
+      distribution = Island(100)
+  )
+
+  val savePopulationHook = SavePopulationHook(island, workDirectory /  "exploration" / (((new SimpleDateFormat("yyyyMMdd_HHmm")).format(new Date()))+"_"+purpose) / ("target"+target))
+  
+  island on grid hook savePopulationHook
+}
+
+val firstCapsule = Capsule(EmptyTask())
+val runs = (0 to 4 by 1).map(ose)
+runs.map(firstCapsule -- _).reduce(_ & _)
+  
