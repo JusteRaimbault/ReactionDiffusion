@@ -30,10 +30,13 @@ val rsquared=Val[Double]
 val objs = Array.fill(5){new ArrayBuffer[Double]()}
 val bufferedSource = io.Source.fromFile(workDirectory / "data/centers.csv")
 for (line <- bufferedSource.getLines) {
+    println(line)
     val cols = line.split(";").toList.tail.map(_.trim.toDouble)
     (0 to 4 by 1).foreach{objs(i).append(cols(i))}
 }
+bufferedSource.close
 
+println(objs)
 
 // Model
 val model =
@@ -91,7 +94,10 @@ def ose(i: Int, objectives: Array[Array[Double]] = objs.map(_.toArray)) = {
   island on grid hook savePopulationHook
 }
 
-val firstCapsule = Capsule(EmptyTask())
-val runs = (0 to 4 by 1).map(ose)
-runs.map(firstCapsule -- _).reduce(_ & _)
+//val firstCapsule = Capsule(EmptyTask())
+//val runs = (0 to 4 by 1).map(ose)
+//runs.map(firstCapsule -- _).reduce(_ & _)
   
+Capsule(EmptyTask())
+
+

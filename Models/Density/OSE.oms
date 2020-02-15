@@ -73,8 +73,8 @@ val island =
       (slope, o4)),
     stochastic = Stochastic(seed = replication),
     evaluation = model,
-    termination = 2000,
-    parallelism = 1000,
+    termination = 10000,
+    parallelism = 500,
     distribution = Island(100)
   )
 
