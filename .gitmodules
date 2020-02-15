@@ -1,0 +1,3 @@
+[submodule "Models/ReactionDiffusion-model"]
+	path = Models/ReactionDiffusion-model
+	url = git@github.com:JusteRaimbault/ReactionDiffusion-model.git
